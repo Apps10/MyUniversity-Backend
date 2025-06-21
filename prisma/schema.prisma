@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,7 +21,7 @@ enum DocumentType {
 }
 
 model Student {
-  id              Int     @id     @default(autoincrement())
+  id              String     @id
   name            String
   lastname        String
   documentType    DocumentType
@@ -29,7 +29,7 @@ model Student {
   email           String  @unique
   password        String
 
-  programId       Int
+  programId       String
   program         Program @relation(fields: [programId], references: [id])
 
   StudentSubject  StudentSubject[]
@@ -37,8 +37,8 @@ model Student {
 
 
 model StudentSubject {
-  studentId       Int
-  subjectId       Int
+  studentId       String
+  subjectId       String
 
   student         Student @relation(fields: [studentId], references: [id])
   subject         Subject @relation(fields: [subjectId], references: [id])
@@ -47,23 +47,23 @@ model StudentSubject {
 }
 
 model Teacher {
-  id              Int     @id     @default(autoincrement())
+  id              String     @id
   name            String
   subjects        Subject[]
 }
 
 model Subject {
-  id              Int     @id     @default(autoincrement())
+  id              String     @id
   name            String
   credits         Int
 
-  teacherId       Int
+  teacherId       String
   teacher         Teacher @relation(fields: [teacherId], references: [id])
   StudentSubject  StudentSubject[]
 }
 
 model Program {
-  id              Int     @id     @default(autoincrement())
+  id              String     @id
   name            String
   totalCredits    Int
   students        Student[]
