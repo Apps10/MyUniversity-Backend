@@ -14,3 +14,8 @@ export const StudentUnAuthorizedException = customExceptionMaker(
   'StudentUnAuthorizedException',
   'credentials are invalid',
 )
+
+export const StudentCantEnrollSubjectException = customExceptionMaker(
+  'StudentCantEnrollSubjectException',
+  'the subject already has a registered teacher',
+)

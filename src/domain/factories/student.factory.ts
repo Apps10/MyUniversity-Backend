@@ -1,5 +1,4 @@
 import { IStudentPrimitive, Student } from '../entities'
-
 export class StudentFactory {
   static fromPrimitives({
     id,
@@ -9,8 +8,8 @@ export class StudentFactory {
     lastname,
     name,
     password,
-    program,
-  }: IStudentPrimitive) {
+    programId,
+  }: IStudentPrimitive): Student {
     return new Student(
       id,
       name,
@@ -19,11 +18,11 @@ export class StudentFactory {
       documentNumber,
       email,
       password,
-      program,
+      programId,
     )
   }
 
-  static fromArrayPrimitives(students: IStudentPrimitive[]) {
+  static fromArrayPrimitives(students: IStudentPrimitive[]): Student[] {
     return students.map((s) => this.fromPrimitives(s))
   }
 }

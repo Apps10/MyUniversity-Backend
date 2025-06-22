@@ -3,10 +3,10 @@ export const customExceptionMaker = function (
   defaultErrorMessage: string,
 ) {
   return class extends Error {
-    errorMessage: string;
+    errorMessage: string
     constructor(optionalErrorMessage?: string) {
-      super(exceptionName);
-      this.errorMessage = optionalErrorMessage ?? defaultErrorMessage;
+      super(exceptionName)
+      this.errorMessage = optionalErrorMessage ?? defaultErrorMessage
     }
-  };
-};
+  }
+}

@@ -1,9 +1,11 @@
-import { Teacher } from './teacher'
-
+interface TeacherData {
+  id: string
+  name: string
+}
 export interface ISubjectPrimitive {
   id: string
   name: string
-  teacher: Teacher
+  teacher: TeacherData
   credits?: number
 }
 
@@ -12,7 +14,7 @@ export class Subject {
     public readonly id: string,
     public name: string,
     public credits: number = 3,
-    public teacher: Teacher,
+    public teacher: TeacherData,
   ) {
     this.ensureIsValid()
   }
@@ -25,16 +27,15 @@ export class Subject {
       throw new Error('id should be an UUID')
     }
 
-    if (this.name.length < 2 || typeof this.name != 'string') {
-      throw new Error('name must be a string of at least 2 characters')
+    if (
+      (this.name.length < 2 && this.name.length > 30) ||
+      typeof this.name != 'string'
+    ) {
+      throw new Error('name must be a string between 2 and 30 characters')
     }
 
     if (this.credits === 3) {
       throw new Error('each subject must be 3 credits.')
-    }
-
-    if (!(this.teacher instanceof Teacher)) {
-      throw new Error('teacher is an instance invalid')
     }
   }
 }

@@ -1,4 +1,7 @@
 import { IStudentPrimitive } from 'src/domain/entities'
 
-export type RegisterStudentDto = IStudentPrimitive
+export interface RegisterStudentDto
+  extends Omit<IStudentPrimitive, 'subjects' | 'program'> {
+  programId: string
+}
 export type LoginStudentDto = Pick<IStudentPrimitive, 'email' | 'password'>

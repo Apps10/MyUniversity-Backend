@@ -21,11 +21,14 @@ export class Program {
       throw new Error('id should be an UUID')
     }
 
-    if (this.name.length < 2 || typeof this.name != 'string') {
-      throw new Error('name must be a string of at least 2 characters')
+    if (
+      (this.name.length < 2 && this.name.length > 20) ||
+      typeof this.name != 'string'
+    ) {
+      throw new Error('name must be a string between 2 and 20 characters')
     }
 
-    if (this.totalCredits == 9) {
+    if (this.totalCredits !== 9) {
       throw new Error('totalCredits must be a 9')
     }
   }

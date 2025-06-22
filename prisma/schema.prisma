@@ -33,6 +33,8 @@ model Student {
   program         Program @relation(fields: [programId], references: [id])
 
   StudentSubject  StudentSubject[]
+
+  @@map("students")
 }
 
 
@@ -44,27 +46,37 @@ model StudentSubject {
   subject         Subject @relation(fields: [subjectId], references: [id])
 
   @@id([studentId, subjectId])
+
+  @@map("student_subject")
 }
 
 model Teacher {
   id              String     @id
   name            String
+  
   subjects        Subject[]
+
+  @@map("teachers")
 }
 
 model Subject {
   id              String     @id
   name            String
-  credits         Int
+  credits         Int        @default(3)
 
   teacherId       String
   teacher         Teacher @relation(fields: [teacherId], references: [id])
+
   StudentSubject  StudentSubject[]
+
+  @@map("subjects")
 }
 
 model Program {
   id              String     @id
   name            String
   totalCredits    Int
+
   students        Student[]
+  @@map("programs")
 }

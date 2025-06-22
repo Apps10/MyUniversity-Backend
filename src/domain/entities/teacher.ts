@@ -1,5 +1,10 @@
-import { Subject } from './subject'
+import { ISubjectPrimitive, Subject } from './subject'
 
+export interface ITeacherPrimitive {
+  id: string
+  name: string
+  subjects?: ISubjectPrimitive[]
+}
 export class Teacher {
   constructor(
     public readonly id: string,
@@ -18,8 +23,11 @@ export class Teacher {
       throw new Error('id should be an UUID')
     }
 
-    if (this.name.length < 2 || typeof this.name != 'string') {
-      throw new Error('name must be a string of at least 2 characters')
+    if (
+      (this.name.length < 2 && this.name.length > 30) ||
+      typeof this.name != 'string'
+    ) {
+      throw new Error('name must be a string between 2 and 30 characters')
     }
   }
 

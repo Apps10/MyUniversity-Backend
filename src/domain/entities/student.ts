@@ -1,11 +1,10 @@
-import { Program } from './program'
-import { Subject } from './subject'
+import { StudentCantEnrollSubjectException } from '../exceptions'
+import { SubjectAlreadyHasRegisteredTeacherException } from '../exceptions/subject.exception'
+import { ISubjectPrimitive, Subject } from './subject'
 
-const DocumentTypeArray = ['CC', 'TI', 'CE'] as const
+export const DocumentTypeArray = ['CC', 'TI', 'CE'] as const
 
-export type UserRole = (typeof DocumentTypeArray)[number]
-export type DocumentType = 'CC' | 'TI' | 'CE'
-
+export type DocumentType = (typeof DocumentTypeArray)[number]
 export interface IStudentPrimitive {
   id: string
   name: string
@@ -14,8 +13,8 @@ export interface IStudentPrimitive {
   documentNumber: string
   email: string
   password: string
-  program: Program
-  subjects: Subject[]
+  programId: string
+  subjects: ISubjectPrimitive[]
 }
 
 export class Student {
@@ -27,7 +26,7 @@ export class Student {
     public documentNumber: string,
     public email: string,
     public password: string,
-    public program: Program,
+    public programId: string,
     public subjects: Subject[] = [],
   ) {
     this.ensureIsValid()
@@ -43,12 +42,18 @@ export class Student {
       throw new Error('id should be an UUID')
     }
 
-    if (this.name.length < 2 || typeof this.name != 'string') {
-      throw new Error('name must be a string of at least 2 characters')
+    if (
+      (this.name.length < 2 && this.name.length > 20) ||
+      typeof this.name != 'string'
+    ) {
+      throw new Error('name must be a string between 2 and 20 characters')
     }
 
-    if (this.lastname.length < 5 || typeof this.name != 'string') {
-      throw new Error('lastname must be a string of at least 5 characters')
+    if (
+      (this.lastname.length < 5 && this.lastname.length > 20) ||
+      typeof this.lastname != 'string'
+    ) {
+      throw new Error('lastname must be a string between 5 and 20 characters')
     }
 
     if (!DocumentTypeArray.includes(this.documentType)) {
@@ -64,26 +69,40 @@ export class Student {
       )
     }
 
-    if (this.email.length < 5 || typeof this.email != 'string') {
-      const emailRegex =
-        /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
-      if (!emailRegex.test(this.email)) {
-        throw new Error('email is Invalid')
-      }
+    const emailRegex =
+      /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
+    if (
+      (this.email.length < 5 && this.email.length > 30) ||
+      typeof this.email != 'string' ||
+      !emailRegex.test(this.email)
+    ) {
+      throw new Error('email is Invalid')
     }
 
-    if (this.password.length < 8 || typeof this.password != 'string') {
-      throw new Error('password must be a string of at least 8 characters')
-    }
+    this.ensurePasswordIsValid()
 
-    if (!this.program) {
-      //TODO: should validate something
+    if (!idRegex.test(this.programId)) {
+      throw new Error('programId should be an UUID')
+    }
+  }
+
+  changePassword(newPassword: string) {
+    this.password = newPassword
+    this.ensureIsValid()
+  }
+
+  private ensurePasswordIsValid() {
+    if (
+      (this.documentNumber.length < 8 && this.documentNumber.length > 20) ||
+      typeof this.password != 'string'
+    ) {
+      throw new Error('password must be a string between 8 and 20 characters')
     }
   }
 
   private ensureMaxSubjects() {
     if (this.subjects.length > 3) {
-      throw new Error('A student can only enroll in up to 3 subjects.')
+      throw new StudentCantEnrollSubjectException()
     }
   }
 
@@ -91,12 +110,8 @@ export class Student {
     const teacherIds = this.subjects.map((s) => s.teacher.id)
     const uniqueTeachers = new Set(teacherIds)
     if (teacherIds.length !== uniqueTeachers.size) {
-      throw new Error('Subjects must be taught by different teachers.')
+      throw new SubjectAlreadyHasRegisteredTeacherException()
     }
-  }
-
-  changePassword(newPassword: string) {
-    this.password = newPassword
   }
 
   enrollNewSubject(subject: Subject) {
