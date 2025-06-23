@@ -1,1 +1,1 @@
-export * from './student.module'
+export * from './common.module'

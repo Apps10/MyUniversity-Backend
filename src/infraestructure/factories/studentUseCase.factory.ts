@@ -1,35 +1,27 @@
+import { Logger } from '@nestjs/common'
 import { StudentUseCaseFactory } from 'src/application/factories/studentUseCase.factory'
-import {
-  LoginStudentUseCase,
-  RegisterStudentUseCase,
-} from 'src/application/useCases'
-import { ProgramRepository, StudentRepository } from 'src/domain/repositories'
-import { HashService, JwtService } from 'src/domain/services'
-import { ProgramMockRepository } from '../repositories/programPrisma.repository'
+import { EnrollStudentToSubjectUseCase } from 'src/application/useCases/enrollStudentToSubject.usecase'
+import { GetClassmateNameInSameSubjectsUseCase } from 'src/application/useCases/getAllClassmatesInSameSubjects.usecase'
+import { StudentRepository, SubjectRepository } from 'src/domain/repositories'
 
 export class StudentUseCaseFactoryImp implements StudentUseCaseFactory {
-  programRepo: ProgramRepository = new ProgramMockRepository()
-
   constructor(
     private readonly studentRepo: StudentRepository,
-    private readonly hashSevice: HashService,
-    private readonly jwtService: JwtService,
+    private readonly subjectRepo: SubjectRepository,
   ) {}
 
-  loginStudent(): LoginStudentUseCase {
-    return new LoginStudentUseCase(
-      this.studentRepo,
-      this.hashSevice,
-      this.jwtService,
-    )
+  enrollStudentToSubject(): EnrollStudentToSubjectUseCase {
+    return new EnrollStudentToSubjectUseCase(this.studentRepo, this.subjectRepo)
   }
 
-  registerStudent(): RegisterStudentUseCase {
-    return new RegisterStudentUseCase(
-      this.studentRepo,
-      this.programRepo,
-      this.hashSevice,
-      this.jwtService,
-    )
+  getClassmateNameInSameSubjects(): GetClassmateNameInSameSubjectsUseCase {
+    return new GetClassmateNameInSameSubjectsUseCase(this.studentRepo)
+  }
+
+  private loggerService(Logger: Logger) {
+    return {
+      error: (title, message) => Logger.error(title, message),
+      log: (title, message) => Logger.log(title, message),
+    }
   }
 }

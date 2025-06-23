@@ -1,8 +1,7 @@
 import { RegisterStudentDto } from '../dtos'
 import { HashService, JwtService } from 'src/domain/services'
-import { StudentRepository } from 'src/domain/repositories'
+import { ProgramRepository, StudentRepository } from 'src/domain/repositories'
 import { StudentFactory } from 'src/domain/factories'
-import { ProgramRepository } from 'src/domain/repositories'
 import {
   ProgramNotFoundException,
   StudentAlreadyExistException,
@@ -18,12 +17,12 @@ export class RegisterStudentUseCase {
 
   async execute(dto: RegisterStudentDto): Promise<{ token: string }> {
     const studentExist = await this.studentRepo.findByEmail(dto.email)
+    const programExist = await this.programRepo.findById(dto.programId)
     if (studentExist) {
       throw new StudentAlreadyExistException()
     }
 
-    const program = await this.programRepo.findById(dto.programId)
-    if (!program) {
+    if (!programExist) {
       throw new ProgramNotFoundException()
     }
 
@@ -32,12 +31,13 @@ export class RegisterStudentUseCase {
       ...dto,
       password: hashedPassword,
       subjects: [],
+      avaliableCredits: programExist.totalCredits,
       programId: dto.programId,
     })
 
     await this.studentRepo.save(student)
 
-    const { password, ...payload } = student
+    const { password,...payload } = student
     const token = this.jwtService.sign(payload)
 
     return { token }

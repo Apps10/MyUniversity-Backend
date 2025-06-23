@@ -3,6 +3,6 @@ import { GenericRepository } from './generic.repository'
 
 export const STUDENT_REPOSITORY = Symbol('StudentRepository')
 export interface StudentRepository extends GenericRepository<Student> {
-  getStudentsNameInSameSubject(subjectId: string): Promise<string[] | []>
+  getClassmateNameInSameSubject(subjectId: string)
   findByEmail(email: string): Promise<Student | null>
 }

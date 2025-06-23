@@ -7,5 +7,10 @@ export const SubjectNotFoundException = customExceptionMaker(
 
 export const SubjectAlreadyHasRegisteredTeacherException = customExceptionMaker(
   'SubjectAlreadyHasRegisteredTeacherException',
-  'student has the maximum subjects',
+  'student already has this teacher enrolled',
+)
+
+export const MaximumNumberEnrolledSubjectsReached = customExceptionMaker(
+  'MaximumNumberEnrolledSubjectsReached',
+  'maximum number of enrolled subjects reached',
 )

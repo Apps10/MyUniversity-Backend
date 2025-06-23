@@ -7,6 +7,7 @@ CREATE TABLE `students` (
     `documentNumber` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
+    `avaliableCredits` INTEGER NOT NULL,
     `programId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `students_email_key`(`email`),

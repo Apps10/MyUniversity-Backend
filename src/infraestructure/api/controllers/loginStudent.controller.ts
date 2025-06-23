@@ -1,21 +1,21 @@
 import { Body, Controller, Inject, Post } from '@nestjs/common'
 import { ApiPaths } from '../../../shared/constants/apiPath'
-import { LoginStudentHttpDto } from '../http-dtos/loginStudent.http-dto'
+import { LoginStudentHttpDto } from '../http-dtos'
 import {
-  STUDENT_USE_CASE_FACTORY,
-  StudentUseCaseFactory,
-} from 'src/application/factories/studentUseCase.factory'
+  AUTH_USE_CASE_FACTORY,
+  AuthUseCaseFactory,
+} from 'src/application/factories'
 
 @Controller(ApiPaths.Auth)
 export class LoginStudentController {
   constructor(
-    @Inject(STUDENT_USE_CASE_FACTORY)
-    private readonly studentUseCases: StudentUseCaseFactory,
+    @Inject(AUTH_USE_CASE_FACTORY)
+    private readonly authUseCases: AuthUseCaseFactory,
   ) {}
 
   @Post('/login')
   async execute(@Body() dto: LoginStudentHttpDto) {
-    const usecase = this.studentUseCases.loginStudent()
+    const usecase = this.authUseCases.loginStudent()
     return await usecase.execute(dto.email, dto.password)
   }
 }

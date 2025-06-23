@@ -1,7 +1,5 @@
 import { IProgramPrimitive } from 'src/domain/entities'
-import { PrismaClient } from '../../generated/prisma'
 
-const prisma = new PrismaClient()
 const programs: IProgramPrimitive[] = [
   {
     id: 'fde5da73-289a-4e1b-bcdd-6f00759e80d6',
@@ -12,8 +10,7 @@ const programs: IProgramPrimitive[] = [
     name: 'Ingenieria Electronica',
   },
 ]
-
-export async function ProgramMain() {
+export async function ProgramMain(prisma: any) {
   console.log(`enviando seeder de PROGRAM`)
   const promiseArray: Promise<any>[] = []
 
@@ -35,12 +32,3 @@ export async function ProgramMain() {
 
   console.log(`ejecutados correctamente`)
 }
-ProgramMain()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })

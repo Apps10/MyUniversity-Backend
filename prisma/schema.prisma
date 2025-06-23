@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -21,62 +20,62 @@ enum DocumentType {
 }
 
 model Student {
-  id              String     @id
-  name            String
-  lastname        String
-  documentType    DocumentType
-  documentNumber  String
-  email           String  @unique
-  password        String
+  id               String       @id
+  name             String
+  lastname         String
+  documentType     DocumentType
+  documentNumber   String
+  email            String       @unique
+  password         String
+  avaliableCredits Int          @default(9)
 
-  programId       String
-  program         Program @relation(fields: [programId], references: [id])
+  programId String
+  program   Program @relation(fields: [programId], references: [id])
 
-  StudentSubject  StudentSubject[]
+  StudentSubject StudentSubject[]
 
   @@map("students")
 }
 
-
 model StudentSubject {
-  studentId       String
-  subjectId       String
+  studentId String
+  subjectId String
 
-  student         Student @relation(fields: [studentId], references: [id])
-  subject         Subject @relation(fields: [subjectId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
 
   @@id([studentId, subjectId])
-
   @@map("student_subject")
 }
 
 model Teacher {
-  id              String     @id
-  name            String
-  
-  subjects        Subject[]
+  id   String @id
+  name String
+
+  subjects Subject[]
 
   @@map("teachers")
 }
 
 model Subject {
-  id              String     @id
-  name            String
-  credits         Int        @default(3)
+  id      String @id
+  name    String
+  credits Int    @default(3)
 
-  teacherId       String
-  teacher         Teacher @relation(fields: [teacherId], references: [id])
+  teacherId String
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
 
-  StudentSubject  StudentSubject[]
+  StudentSubject StudentSubject[]
 
   @@map("subjects")
 }
 
 model Program {
-  id              String     @id
-  name            String
-  totalCredits    Int
+  id           String @id
+  name         String
+  totalCredits Int
 
-  students        Student[]
+  students Student[]
+
   @@map("programs")
 }

@@ -5,7 +5,7 @@ interface TeacherData {
 export interface ISubjectPrimitive {
   id: string
   name: string
-  teacher: TeacherData
+  teacherData: TeacherData
   credits?: number
 }
 
@@ -34,7 +34,7 @@ export class Subject {
       throw new Error('name must be a string between 2 and 30 characters')
     }
 
-    if (this.credits === 3) {
+    if (this.credits !== 3) {
       throw new Error('each subject must be 3 credits.')
     }
   }

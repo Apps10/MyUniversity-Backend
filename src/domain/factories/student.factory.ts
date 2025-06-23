@@ -1,4 +1,5 @@
 import { IStudentPrimitive, Student } from '../entities'
+import { SubjectFactory } from './subject.factoy'
 export class StudentFactory {
   static fromPrimitives({
     id,
@@ -9,6 +10,8 @@ export class StudentFactory {
     name,
     password,
     programId,
+    avaliableCredits,
+    subjects,
   }: IStudentPrimitive): Student {
     return new Student(
       id,
@@ -19,6 +22,8 @@ export class StudentFactory {
       email,
       password,
       programId,
+      avaliableCredits,
+      SubjectFactory.fromArrayPrimitive(subjects ?? []),
     )
   }
 

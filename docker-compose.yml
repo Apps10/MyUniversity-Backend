@@ -1,5 +1,4 @@
 services:
-
   db:
     image: mysql:5.6
     restart: always
@@ -7,3 +6,9 @@ services:
       - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${PASSWORD_MYSQL}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

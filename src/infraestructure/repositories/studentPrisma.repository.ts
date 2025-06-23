@@ -1,11 +1,8 @@
 import { PrismaService } from 'src/shared/services'
 import { StudentRepository } from 'src/domain/repositories'
 import { Student } from 'src/domain/entities'
-import {
-  StudentFactory,
-  SubjectFactory,
-  TeacherFactory,
-} from 'src/domain/factories'
+import { StudentFactory } from 'src/domain/factories'
+import { availableMemory } from 'node:process'
 
 export class StudentPrismaRepository implements StudentRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -22,12 +19,14 @@ export class StudentPrismaRepository implements StudentRepository {
     return students.map((s) =>
       StudentFactory.fromPrimitives({
         ...s,
-        subjects: s.StudentSubject.map((ss) =>
-          SubjectFactory.fromPrimitive({
-            ...ss.subject,
-            teacher: TeacherFactory.fromPrimivites({ ...ss.subject.teacher }),
-          }),
-        ),
+        subjects: s.StudentSubject.map((s) => ({
+          id: s.subject.id,
+          name: s.subject.name,
+          teacherData: {
+            id: s.subject.teacherId,
+            name: s.subject.name,
+          },
+        })),
       }),
     )
   }
@@ -46,12 +45,14 @@ export class StudentPrismaRepository implements StudentRepository {
 
     return StudentFactory.fromPrimitives({
       ...student,
-      subjects: student.StudentSubject.map((ss) =>
-        SubjectFactory.fromPrimitive({
-          ...ss.subject,
-          teacher: TeacherFactory.fromPrimivites({ ...ss.subject.teacher }),
-        }),
-      ),
+      subjects: student.StudentSubject.map((s) => ({
+        id: s.subject.id,
+        name: s.subject.name,
+        teacherData: {
+          id: s.subject.teacherId,
+          name: s.subject.name,
+        },
+      })),
     })
   }
 
@@ -67,34 +68,52 @@ export class StudentPrismaRepository implements StudentRepository {
 
     return StudentFactory.fromPrimitives({
       ...student,
-      subjects: student.StudentSubject.map((ss) =>
-        SubjectFactory.fromPrimitive({
-          ...ss.subject,
-          teacher: TeacherFactory.fromPrimivites({ ...ss.subject.teacher }),
-        }),
-      ),
+      subjects: student.StudentSubject.map((s) => ({
+        id: s.subject.id,
+        name: s.subject.name,
+        teacherData: {
+          id: s.subject.teacherId,
+          name: s.subject.name,
+        },
+      })),
     })
   }
 
-  async getStudentsNameInSameSubject(
-    subjectId: string,
-  ): Promise<string[] | []> {
-    const studentsName = await this.prisma.student.findMany({
-      select: {
-        name: true,
-      },
+  async getClassmateNameInSameSubject(studentId: string) {
+    const classmateNameWithSubjectName = await this.prisma.subject.findMany({
       where: {
         StudentSubject: {
           some: {
-            subjectId,
+            studentId: studentId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        StudentSubject: {
+          select: {
+            student: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
     })
 
-    if (studentsName.length === 0) return []
+    if (classmateNameWithSubjectName.length === 0) return []
 
-    return studentsName.map((s) => s.name)
+    return classmateNameWithSubjectName.map((subject) => ({
+      subjectId: subject.id,
+      subjectName: subject.name,
+      students: subject.StudentSubject.map((s) => ({
+        id: s.student.id,
+        name: s.student.name,
+      })),
+    }))
   }
 
   async save(student: Student): Promise<void> {
@@ -111,6 +130,15 @@ export class StudentPrismaRepository implements StudentRepository {
       email: student.email,
       password: student.password,
       programId: student.programId,
+      avaliableCredits: student.avaliableCredits,
+      StudentSubject: {
+        createMany: {
+          data: student.subjects.map((s) => ({
+            subjectId: s.id,
+          })),
+          skipDuplicates: true,
+        },
+      },
     }
 
     if (existing) {
@@ -130,11 +158,12 @@ export class StudentPrismaRepository implements StudentRepository {
     return {
       StudentSubject: {
         include: {
-          subject: {
-            include: {
-              teacher: true, // si necesitas el profe en el constructor
-            },
-          },
+          subject: true,
+          // subject: {
+          //   include: {
+          //     teacher: true, // si necesitas el profe en el constructor
+          //   },
+          // },
         },
       },
     }

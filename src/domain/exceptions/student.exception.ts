@@ -19,3 +19,13 @@ export const StudentCantEnrollSubjectException = customExceptionMaker(
   'StudentCantEnrollSubjectException',
   'the subject already has a registered teacher',
 )
+
+export const StudentAlreadyEnrolledInSubjectException = customExceptionMaker(
+  'StudentAlreadyEnrolledInSubjectException',
+  'The student has already enrolled in the subject',
+)
+
+export const StudentCreditsAreNotAvaliablesException = customExceptionMaker(
+  'StudentCreditsAreNotAvaliablesException',
+  'The student hasnt credits avaliables',
+)

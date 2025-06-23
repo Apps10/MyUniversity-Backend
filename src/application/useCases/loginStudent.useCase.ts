@@ -20,7 +20,9 @@ export class LoginStudentUseCase {
     }
 
     const { password: _p, ...obj } = student as Student
-    const token = this.jwtService.sign(obj)
+    const token = this.jwtService.sign({
+      ...obj,
+    })
     return { token }
   }
 }

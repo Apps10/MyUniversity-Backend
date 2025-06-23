@@ -1,12 +1,5 @@
 import { DocumentType, DocumentTypeArray } from 'src/domain/entities'
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsUUID,
-} from 'class-validator'
+import { IsEmail, IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator'
 
 export class RegisterStudentHttpDto {
   @IsNotEmpty()

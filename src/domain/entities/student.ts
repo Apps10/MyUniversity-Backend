@@ -1,5 +1,11 @@
-import { StudentCantEnrollSubjectException } from '../exceptions'
-import { SubjectAlreadyHasRegisteredTeacherException } from '../exceptions/subject.exception'
+import {
+  StudentAlreadyEnrolledInSubjectException,
+  StudentCreditsAreNotAvaliablesException,
+} from '../exceptions'
+import {
+  MaximumNumberEnrolledSubjectsReached,
+  SubjectAlreadyHasRegisteredTeacherException,
+} from '../exceptions/subject.exception'
 import { ISubjectPrimitive, Subject } from './subject'
 
 export const DocumentTypeArray = ['CC', 'TI', 'CE'] as const
@@ -11,27 +17,30 @@ export interface IStudentPrimitive {
   lastname: string
   documentType: DocumentType
   documentNumber: string
+  avaliableCredits: number
   email: string
   password: string
   programId: string
-  subjects: ISubjectPrimitive[]
+  subjects?: ISubjectPrimitive[]
 }
 
 export class Student {
   constructor(
     public readonly id: string,
-    public name: string,
-    public lastname: string,
-    public documentType: DocumentType,
-    public documentNumber: string,
-    public email: string,
-    public password: string,
-    public programId: string,
+    public readonly name: string,
+    public readonly lastname: string,
+    public readonly documentType: DocumentType,
+    public readonly documentNumber: string,
+    public readonly email: string,
+    public readonly password: string,
+    public readonly programId: string,
+    public avaliableCredits: number,
     public subjects: Subject[] = [],
   ) {
     this.ensureIsValid()
     this.ensureMaxSubjects()
     this.ensureNoRepeatedTeachers()
+    this.ensureNoRepeatedSubjects()
   }
 
   private ensureIsValid() {
@@ -86,11 +95,6 @@ export class Student {
     }
   }
 
-  changePassword(newPassword: string) {
-    this.password = newPassword
-    this.ensureIsValid()
-  }
-
   private ensurePasswordIsValid() {
     if (
       (this.documentNumber.length < 8 && this.documentNumber.length > 20) ||
@@ -102,7 +106,7 @@ export class Student {
 
   private ensureMaxSubjects() {
     if (this.subjects.length > 3) {
-      throw new StudentCantEnrollSubjectException()
+      throw new MaximumNumberEnrolledSubjectsReached()
     }
   }
 
@@ -114,9 +118,28 @@ export class Student {
     }
   }
 
+  private ensureNoRepeatedSubjects() {
+    const ids = this.subjects.map((s) => s.id)
+    const unique = new Set(ids)
+
+    if (unique.size !== ids.length) {
+      throw new StudentAlreadyEnrolledInSubjectException()
+    }
+  }
+
+  private ensureCreditsAreAvaliables() {
+    if (this.avaliableCredits < 0) {
+      throw new StudentCreditsAreNotAvaliablesException()
+    }
+  }
+
   enrollNewSubject(subject: Subject) {
     this.subjects.push(subject)
+    this.avaliableCredits -= subject.credits
+
+    this.ensureCreditsAreAvaliables()
     this.ensureMaxSubjects()
+    this.ensureNoRepeatedSubjects()
     this.ensureNoRepeatedTeachers()
   }
 }
