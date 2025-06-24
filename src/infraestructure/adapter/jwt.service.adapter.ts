@@ -13,7 +13,6 @@ export class JwtServiceAdapter implements JwtService {
     id,
     lastname,
     name,
-    programId,
   }: JwtPayload): string {
     return this.jwt.sign({
       avaliableCredits,
@@ -23,7 +22,6 @@ export class JwtServiceAdapter implements JwtService {
       id,
       lastname,
       name,
-      programId,
     })
   }
 

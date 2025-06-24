@@ -6,6 +6,8 @@ import {
   ProgramNotFoundException,
   StudentAlreadyExistException,
 } from 'src/domain/exceptions'
+import { IStudentPrimitive } from 'src/domain/entities'
+import { AuthResponse } from 'src/domain/interface/AuthResponse.interface'
 
 export class RegisterStudentUseCase {
   constructor(
@@ -15,7 +17,10 @@ export class RegisterStudentUseCase {
     private readonly jwtService: JwtService,
   ) {}
 
-  async execute(dto: RegisterStudentDto): Promise<{ token: string }> {
+  async execute(dto: RegisterStudentDto): Promise<{
+    token: string
+    user: AuthResponse
+  }> {
     const studentExist = await this.studentRepo.findByEmail(dto.email)
     const programExist = await this.programRepo.findById(dto.programId)
     if (studentExist) {
@@ -37,9 +42,9 @@ export class RegisterStudentUseCase {
 
     await this.studentRepo.save(student)
 
-    const { password,...payload } = student
-    const token = this.jwtService.sign(payload)
+    const { password: _p, subjects, ...obj } = student
+    const token = this.jwtService.sign(obj)
 
-    return { token }
+    return { token, user: { ...obj } }
   }
 }

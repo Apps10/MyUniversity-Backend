@@ -1,3 +1,6 @@
 export * from './enrollStudentToSubject.usecase'
+export * from './getAllClassmatesInSameSubjects.usecase'
+export * from './getAllPrograms.usecase'
+export * from './getAllSubjects.usecase'
 export * from './loginStudent.useCase'
 export * from './registerStudent.useCase'

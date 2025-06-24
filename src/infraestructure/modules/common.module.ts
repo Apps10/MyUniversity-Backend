@@ -39,6 +39,9 @@ import {
   SUBJECT_USE_CASE_FACTORY,
   AUTH_USE_CASE_FACTORY,
 } from 'src/application/factories'
+import { PROGRAM_USE_CASE_FACTORY } from 'src/application/factories/programUseCase.factory'
+import { ProgramUseCaseFactoryImp } from '../factories/programUseCase.factory'
+import { GetAllProgramController } from '../api/controllers/getAllProgram.controller'
 
 @Module({
   imports: [
@@ -54,6 +57,7 @@ import {
     GetAllSubjectController,
     EnrollStudentToSubjectController,
     GetClassmateNameInSameSubjectController,
+    GetAllProgramController,
   ],
   providers: [
     PrismaService,
@@ -124,6 +128,12 @@ import {
       useFactory: (subjectRepo: SubjectRepository) =>
         new SubjectUseCaseFactoryImp(subjectRepo),
       inject: [SUBJECT_REPOSITORY],
+    },
+    {
+      provide: PROGRAM_USE_CASE_FACTORY,
+      useFactory: (programRepo: ProgramRepository) =>
+        new ProgramUseCaseFactoryImp(programRepo),
+      inject: [PROGRAM_REPOSITORY],
     },
   ],
   exports: [AUTH_USE_CASE_FACTORY],

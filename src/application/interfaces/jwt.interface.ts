@@ -1,3 +1,6 @@
 import { IStudentPrimitive } from 'src/domain/entities'
 
-export type JwtPayload = Omit<IStudentPrimitive, 'password' | 'subjects'>
+export type JwtPayload = Omit<
+  IStudentPrimitive,
+  'password' | 'subjects' | 'programId'
+>

@@ -1,5 +1,6 @@
-import { Student } from 'src/domain/entities'
+import { IStudentPrimitive, Student } from 'src/domain/entities'
 import { StudentUnAuthorizedException } from 'src/domain/exceptions'
+import { AuthResponse } from 'src/domain/interface/AuthResponse.interface'
 import { StudentRepository } from 'src/domain/repositories'
 import { HashService, JwtService } from 'src/domain/services'
 
@@ -10,7 +11,13 @@ export class LoginStudentUseCase {
     private readonly jwtService: JwtService,
   ) {}
 
-  async execute(email: string, password: string): Promise<{ token: string }> {
+  async execute(
+    email: string,
+    password: string,
+  ): Promise<{
+    token: string
+    user: AuthResponse
+  }> {
     const student = await this.studentRepo.findByEmail(email)
     if (
       !student ||
@@ -19,10 +26,8 @@ export class LoginStudentUseCase {
       throw new StudentUnAuthorizedException()
     }
 
-    const { password: _p, ...obj } = student as Student
-    const token = this.jwtService.sign({
-      ...obj,
-    })
-    return { token }
+    const { password: _p, subjects, programId, ...obj } = student
+    const token = this.jwtService.sign(obj)
+    return { token, user: { ...obj } }
   }
 }

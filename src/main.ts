@@ -13,6 +13,9 @@ async function bootstrap() {
     }),
   )
 
+  app.enableCors({
+    origin: '*',
+  })
   app.setGlobalPrefix('api/v1')
 
   app.useGlobalFilters(new DomainExceptionHandler())
